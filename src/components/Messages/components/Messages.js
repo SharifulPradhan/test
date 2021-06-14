@@ -13,38 +13,39 @@ const socket = io(
   config.BOT_SERVER_ENDPOINT,
   { transports: ['websocket', 'polling', 'flashsocket'] }
 );
-const user = 'User ' + parseInt(Math.random() * 10)
+const userName = 'User '+parseInt(Math.random()*10)
 
 function Messages() {
   // const [playSend] = useSound(config.SEND_AUDIO_URL);
   // const [playReceive] = useSound(config.RECEIVE_AUDIO_URL);
   const { messages, setLatestMessage } = useContext(LatestMessagesContext);
-  const [botChat, setBotChat] = useState([]);
+  const [message, setMessage] = useState('')
+  const [chat, setChat] = useState([])
+  console.log(chat)
 
   useEffect(() => {
-    socket.on('message', payload => {
-      setBotChat([...botChat, payload])
+    socket.on('bot-message', message => {
+      setChat([...chat, message])
     })
   })
 
   const sendMessage = (e) => {
-    e.preventDefault();
-    console.log(messages);
-    socket.emit('message', { user, messages })
-    setLatestMessage('');
-  }
+    socket.emit('message',{userName,message})
+    setMessage([...message, e.target.body])
+  };
 
-  const onChangeMessage = e => {
-    setLatestMessage({user: user, message: e.target.value});
+  function onChangeMessage(e) {
+    setMessage(e.target.value);
   }
   return (
     <div className="messages">
       <Header />
       <div className="messages__list" id="message-list">
         <Message message={messages}></Message>
-        <TypingMessage></TypingMessage>
+        <TypingMessage />
+        <p className="messages__message messages__message--me">{message}</p>
       </div>
-      <Footer message={messages} sendMessage={sendMessage} onChangeMessage={onChangeMessage} />
+      <Footer message={message} sendMessage={sendMessage} onChangeMessage={onChangeMessage} />
     </div>
   );
 }

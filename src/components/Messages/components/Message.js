@@ -17,7 +17,7 @@ export default function Message({ nextMessage, message, botTyping }) {
       )}
       key={message.id}
     >
-      {message.message}
+      {message.bot}
     </p>
   );
 }
